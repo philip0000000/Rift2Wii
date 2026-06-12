@@ -1,0 +1,204 @@
+﻿<Window x:Class="OpenXRInputExplorer.ViewerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="OpenXRInputExplorer Viewer"
+        Height="600"
+        Width="800">
+
+    <Grid Margin="10">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="120" />
+        </Grid.RowDefinitions>
+
+        <!-- Controller Area -->
+
+        <Grid Grid.Row="0">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- LEFT CONTROLLER -->
+
+            <GroupBox Header="Left Touch Controller"
+                      Margin="5">
+
+                <StackPanel Margin="5">
+
+                    <TextBlock Text="Position"
+                               FontWeight="Bold"/>
+
+                    <TextBlock x:Name="LeftPosXText"
+                               Text="X: 0.00"/>
+
+                    <TextBlock x:Name="LeftPosYText"
+                               Text="Y: 0.00"/>
+
+                    <TextBlock x:Name="LeftPosZText"
+                               Text="Z: 0.00"/>
+
+                    <Separator/>
+
+                    <TextBlock Text="Rotation"
+                               FontWeight="Bold"/>
+
+                    <TextBlock x:Name="LeftPitchText"
+                               Text="Pitch: 0"/>
+
+                    <TextBlock x:Name="LeftYawText"
+                               Text="Yaw: 0"/>
+
+                    <TextBlock x:Name="LeftRollText"
+                               Text="Roll: 0"/>
+
+                    <Separator/>
+
+                    <TextBlock Text="Trigger"/>
+
+                    <ProgressBar x:Name="LeftTriggerBar"
+                                 Height="20"
+                                 Maximum="100"
+                                 Value="50"/>
+
+                    <TextBlock Text="Grip"/>
+
+                    <ProgressBar x:Name="LeftGripBar"
+                                 Height="20"
+                                 Maximum="100"
+                                 Value="30"/>
+
+                    <Separator/>
+
+                    <TextBlock Text="Thumbstick"
+                       FontWeight="Bold"/>
+
+                    <TextBlock x:Name="LeftThumbstickXText"
+                       Text="X: 0.00"/>
+
+                    <TextBlock x:Name="LeftThumbstickYText"
+                       Text="Y: 0.00"/>
+
+                    <Separator/>
+
+                    <TextBlock Text="Buttons"
+                        FontWeight="Bold"/>
+
+                    <TextBlock x:Name="LeftXButtonText"
+                        Text="X: False"/>
+
+                    <TextBlock x:Name="LeftYButtonText"
+                        Text="Y: False"/>
+
+                    <TextBlock x:Name="LeftThumbstickClickText"
+                        Text="Stick: False"/>
+
+                </StackPanel>
+
+            </GroupBox>
+
+            <!-- RIGHT CONTROLLER -->
+
+            <GroupBox Header="Right Touch Controller"
+                      Grid.Column="1"
+                      Margin="5">
+
+                <StackPanel Margin="5">
+
+                    <TextBlock Text="Position"
+                               FontWeight="Bold"/>
+
+                    <TextBlock x:Name="RightPosXText"
+                               Text="X: 0.00"/>
+
+                    <TextBlock x:Name="RightPosYText"
+                               Text="Y: 0.00"/>
+
+                    <TextBlock x:Name="RightPosZText"
+                               Text="Z: 0.00"/>
+
+                    <Separator/>
+
+                    <TextBlock Text="Rotation"
+                               FontWeight="Bold"/>
+
+                    <TextBlock x:Name="RightPitchText"
+                               Text="Pitch: 0"/>
+
+                    <TextBlock x:Name="RightYawText"
+                               Text="Yaw: 0"/>
+
+                    <TextBlock x:Name="RightRollText"
+                               Text="Roll: 0"/>
+
+                    <Separator/>
+
+                    <TextBlock Text="Trigger"/>
+
+                    <ProgressBar x:Name="RightTriggerBar"
+                                 Height="20"
+                                 Maximum="100"
+                                 Value="75"/>
+
+                    <TextBlock Text="Grip"/>
+
+                    <ProgressBar x:Name="RightGripBar"
+                                 Height="20"
+                                 Maximum="100"
+                                 Value="60"/>
+
+                    <Separator/>
+
+                    <TextBlock Text="Thumbstick"
+                        FontWeight="Bold"/>
+
+                    <TextBlock x:Name="RightThumbstickXText"
+                        Text="X: 0.00"/>
+
+                    <TextBlock x:Name="RightThumbstickYText"
+                        Text="Y: 0.00"/>
+
+                    <Separator/>
+
+                    <TextBlock Text="Buttons"
+                        FontWeight="Bold"/>
+
+                    <TextBlock x:Name="RightAButtonText"
+                        Text="A: False"/>
+
+                    <TextBlock x:Name="RightBButtonText"
+                        Text="B: False"/>
+
+                    <TextBlock x:Name="RightThumbstickClickText"
+                        Text="Stick: False"/>
+
+                </StackPanel>
+
+            </GroupBox>
+
+        </Grid>
+
+        <!-- Status Log -->
+
+        <GroupBox Grid.Row="1"
+                  Header="Status Log"
+                  Margin="5">
+
+            <TextBox x:Name="StatusLogTextBox"
+                     Margin="5"
+                     IsReadOnly="True"
+                     TextWrapping="Wrap"
+                     AcceptsReturn="True"
+                     VerticalScrollBarVisibility="Auto"
+                     HorizontalScrollBarVisibility="Auto"/>
+
+        </GroupBox>
+
+    </Grid>
+
+</Window>
