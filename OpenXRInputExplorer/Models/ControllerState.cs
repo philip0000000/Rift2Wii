@@ -2,6 +2,12 @@
 {
     public class ControllerState
     {
+        public bool IsTracked { get; set; }
+        public long SampleTime { get; set; }
+        public bool LinearVelocityValid { get; set; }
+        public bool AngularVelocityValid { get; set; }
+        public System.Numerics.Vector3 LinearVelocity { get; set; }
+        public System.Numerics.Vector3 AngularVelocity { get; set; }
         public bool TriggerPressed { get; set; }
         public bool GripPressed { get; set; }
         public bool A { get; set; }

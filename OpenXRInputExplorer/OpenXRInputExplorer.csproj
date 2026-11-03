@@ -2,10 +2,15 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <AssemblyName>Rift2Wii</AssemblyName>
+    <RootNamespace>OpenXRInputExplorer</RootNamespace>
+    <Product>Rift2Wii</Product>
+    <Description>Independent Rift S controller bridge and VR window viewer for Dolphin Emulator.</Description>
+    <Version>0.1.0</Version>
     <Platforms>AnyCPU;x64</Platforms>
     <PlatformTarget>x64</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -19,6 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\README.md;..\LICENSE;..\THIRD-PARTY-NOTICES.md" Link="%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="..\licenses\*" Link="licenses\%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="..\docs\DOLPHIN-INPUT.md" Link="docs\DOLPHIN-INPUT.md" CopyToPublishDirectory="PreserveNewest" />
     <!-- This package uses native C++ assets, so copy the loader explicitly for WPF. -->
     <None Include="$(PkgOpenXR_Loader)\native\x64\release\bin\openxr_loader.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -10,7 +10,7 @@ namespace OpenXRInputExplorer.Services
     /// Handles communication with OpenXR.
     /// This class should be the only place that talks directly to OpenXR.
     /// </summary>
-    public unsafe class OpenXRService
+    public unsafe partial class OpenXRService : IDisposable
     {
         private readonly XR _xr;
 
@@ -52,6 +52,7 @@ namespace OpenXRInputExplorer.Services
 
         private SessionState _sessionState;
         private bool _isSessionRunning;
+        public bool ControllerActionsAvailable { get; private set; }
 
         private Silk.NET.OpenXR.Action _triggerClickAction;
         private Silk.NET.OpenXR.Action _gripClickAction;
@@ -140,8 +141,8 @@ namespace OpenXRInputExplorer.Services
                 ApiVersion = MakeOpenXRVersion(1, 0, 0)
             };
 
-            WriteFixedString(applicationInfo.ApplicationName, "OpenXRInputExplorer");
-            WriteFixedString(applicationInfo.EngineName, "OpenXRInputExplorer");
+            WriteFixedString(applicationInfo.ApplicationName, "Rift2Wii");
+            WriteFixedString(applicationInfo.EngineName, "Rift2Wii");
 
             byte[] d3d11ExtensionBytes =
                 Encoding.UTF8.GetBytes(D3D11ExtensionName + "\0");
@@ -174,6 +175,10 @@ namespace OpenXRInputExplorer.Services
 
         public void Update()
         {
+            RightInputAvailable = false;
+            ControllerActionsAvailable = false;
+            _leftControllerState.IsTracked = false;
+            _rightControllerState.IsTracked = false;
             if (!_isSessionStarted)
             {
                 return;
@@ -201,10 +206,7 @@ namespace OpenXRInputExplorer.Services
                 &frameWaitInfo,
                 &frameState);
 
-            if (result != Result.Success)
-            {
-                return;
-            }
+            CheckXr(result, "xrWaitFrame");
 
             _predictedDisplayTime =
                 (long)frameState.PredictedDisplayTime;
@@ -218,10 +220,8 @@ namespace OpenXRInputExplorer.Services
                 _session,
                 &frameBeginInfo);
 
-            if (result != Result.Success)
-            {
-                return;
-            }
+            // FrameDiscarded is a success code and still requires a matching EndFrame.
+            CheckXr(result, "xrBeginFrame");
 
             var frameEndInfo = new FrameEndInfo
             {
@@ -232,14 +232,33 @@ namespace OpenXRInputExplorer.Services
                 Layers = null
             };
 
-            if (SyncActions())
+            try
             {
-                UpdateControllerPoses();
-            }
+                if (SyncActions())
+                {
+                    UpdateControllerPoses();
+                    ControllerActionsAvailable = frameState.ShouldRender != 0;
+                    if (frameState.ShouldRender != 0) UpdateRightAim();
+                }
 
-            _xr.EndFrame(
-                _session,
-                &frameEndInfo);
+                if (frameState.ShouldRender != 0)
+                {
+                    UpdateScreenPlacement();
+                    RenderTestScreen();
+                    var quad = CreateTestScreenLayer();
+                    CompositionLayerBaseHeader* layer = (CompositionLayerBaseHeader*)&quad;
+                    frameEndInfo.LayerCount = 1;
+                    frameEndInfo.Layers = &layer;
+                    // End here while the quad and pointer array are still in scope.
+                    CheckXr(_xr.EndFrame(_session, &frameEndInfo), "xrEndFrame");
+                }
+            }
+            finally
+            {
+                // No rendering requested, or preparation failed: finish with no layers.
+                if (frameEndInfo.LayerCount == 0)
+                    _xr.EndFrame(_session, &frameEndInfo);
+            }
         }
 
         private static ulong MakeOpenXRVersion(uint major, uint minor, uint patch)
@@ -349,10 +368,12 @@ namespace OpenXRInputExplorer.Services
 
             CreateSession();
             CreateReferenceSpace();
+            CreateViewSpace();
 
             CreateHandPaths();
             CreateActionSet();
             CreateGripPoseAction();
+            CreateRightAimAction();
 
             CreateTriggerValueAction();
             CreateGripValueAction();
@@ -364,6 +385,8 @@ namespace OpenXRInputExplorer.Services
             SuggestOculusTouchBindings();
             AttachActionSet();
             CreateGripActionSpaces();
+            CreateRightAimSpace();
+            CreateTestScreen();
 
             _isSessionStarted = true;
         }
@@ -648,7 +671,8 @@ namespace OpenXRInputExplorer.Services
                 "/user/hand/right/input/thumbstick/click",
                 out ulong rightThumbstickClickPath);
 
-            var bindings = stackalloc ActionSuggestedBinding[14];
+            StringToPath("/user/hand/right/input/aim/pose", out ulong rightAimPath);
+            var bindings = stackalloc ActionSuggestedBinding[15];
 
             bindings[0] = new ActionSuggestedBinding
             {
@@ -734,11 +758,13 @@ namespace OpenXRInputExplorer.Services
                 Binding = rightThumbstickClickPath
             };
 
+            bindings[14] = new ActionSuggestedBinding { Action = _rightAimAction, Binding = rightAimPath };
+
             var suggestedBindings = new InteractionProfileSuggestedBinding
             {
                 Type = StructureType.TypeInteractionProfileSuggestedBinding,
                 InteractionProfile = interactionProfilePath,
-                CountSuggestedBindings = 14,
+                CountSuggestedBindings = 15,
                 SuggestedBindings = bindings
             };
 
@@ -927,8 +953,12 @@ namespace OpenXRInputExplorer.Services
 
         private void UpdateControllerPose(Space controllerSpace, ControllerState state)
         {
+            state.IsTracked = false;
+            state.LinearVelocityValid = state.AngularVelocityValid = false;
+            var velocity = new SpaceVelocity { Type = StructureType.TypeSpaceVelocity };
             var location = new SpaceLocation
             {
+                Next = &velocity,
                 Type = StructureType.TypeSpaceLocation
             };
 
@@ -942,6 +972,16 @@ namespace OpenXRInputExplorer.Services
             {
                 return;
             }
+
+            const SpaceLocationFlags required = SpaceLocationFlags.PositionValidBit | SpaceLocationFlags.OrientationValidBit |
+                SpaceLocationFlags.PositionTrackedBit | SpaceLocationFlags.OrientationTrackedBit;
+            if ((location.LocationFlags & required) != required) return;
+            state.IsTracked = true;
+            state.SampleTime = _predictedDisplayTime;
+            state.LinearVelocityValid = (velocity.VelocityFlags & SpaceVelocityFlags.LinearValidBit) != 0;
+            state.AngularVelocityValid = (velocity.VelocityFlags & SpaceVelocityFlags.AngularValidBit) != 0;
+            state.LinearVelocity = new(velocity.LinearVelocity.X, velocity.LinearVelocity.Y, velocity.LinearVelocity.Z);
+            state.AngularVelocity = new(velocity.AngularVelocity.X, velocity.AngularVelocity.Y, velocity.AngularVelocity.Z);
 
             QuaternionToEulerDegrees(
                 location.Pose.Orientation,
@@ -998,6 +1038,15 @@ namespace OpenXRInputExplorer.Services
                     if (_sessionState == SessionState.Ready)
                     {
                         BeginSession();
+                    }
+                    else if (_sessionState == SessionState.Stopping)
+                    {
+                        CheckXr(_xr.EndSession(_session), "xrEndSession");
+                        _isSessionRunning = false;
+                    }
+                    else if (_sessionState is SessionState.Exiting or SessionState.LossPending)
+                    {
+                        _isSessionRunning = false;
                     }
                 }
 
@@ -1196,7 +1245,7 @@ namespace OpenXRInputExplorer.Services
                 return false;
             }
 
-            return state.CurrentState != 0;
+            return state.IsActive != 0 && state.CurrentState != 0;
         }
 
         private float GetFloatActionState(Silk.NET.OpenXR.Action action, ulong subactionPath)

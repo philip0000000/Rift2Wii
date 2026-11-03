@@ -4,20 +4,203 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="OpenXRInputExplorer Viewer"
-        Height="600"
-        Width="800">
+        Title="Rift2Wii"
+        Height="920"
+        Width="850"
+        MinHeight="650"
+        MinWidth="740">
 
     <Grid Margin="10">
 
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="120" />
         </Grid.RowDefinitions>
 
+        <GroupBox Header="VR screen" Margin="5">
+            <Grid Margin="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="95" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="75" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Text="Screen width" VerticalAlignment="Center" />
+                <Slider x:Name="ScreenWidthSlider" Grid.Column="1" Minimum="0.5" Maximum="4"
+                        Value="1.6" TickFrequency="0.1" IsSnapToTickEnabled="True" Margin="5"
+                        AutomationProperties.Name="Screen width in metres"
+                        ValueChanged="ScreenDimensionsChanged" />
+                <TextBlock Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center"
+                           Text="{Binding ElementName=ScreenWidthSlider, Path=Value, StringFormat={}{0:F1} m}" />
+                <TextBlock Grid.Row="1" Text="Distance" VerticalAlignment="Center" />
+                <Slider x:Name="ScreenDistanceSlider" Grid.Row="1" Grid.Column="1" Minimum="0.5" Maximum="5"
+                        Value="2" TickFrequency="0.1" IsSnapToTickEnabled="True" Margin="5"
+                        AutomationProperties.Name="Screen distance in metres"
+                        ValueChanged="ScreenDimensionsChanged" />
+                <TextBlock Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center"
+                           Text="{Binding ElementName=ScreenDistanceSlider, Path=Value, StringFormat={}{0:F1} m}" />
+                <Button Grid.Column="3" Grid.RowSpan="2" Content="Recenter in 3 s" Padding="14,8" Margin="8,0,0,0"
+                        Click="RecenterScreenClicked"
+                        ToolTip="Click, then look forward in the headset. The screen stays level at eye height." />
+                <TextBlock x:Name="ScreenPlacementStatusText" Grid.Row="2" Grid.ColumnSpan="4"
+                           Text="The screen stays level. Recenter gives you 3 seconds to look forward."
+                           TextWrapping="Wrap" Margin="0,6,0,0" />
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="1" Header="Window capture" Margin="5">
+            <Grid Margin="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="270" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Margin="0,0,12,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Name="ChooseWindowButton" Content="Choose window…" Padding="12,6"
+                                Click="ChooseWindowClicked" IsEnabled="False" />
+                        <Button x:Name="StopCaptureButton" Content="Stop" Padding="12,6" Margin="8,0,0,0"
+                                Click="StopCaptureClicked" IsEnabled="False" />
+                    </StackPanel>
+                    <TextBlock x:Name="CaptureStatusText" Text="Choose Dolphin's game window to show it in VR."
+                               TextWrapping="Wrap" Margin="0,10,0,0" />
+                </StackPanel>
+                <Border Grid.Column="1" Background="Black" Height="140">
+                    <Grid>
+                        <TextBlock x:Name="CapturePreviewPlaceholder" Text="Desktop preview"
+                                   Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Image x:Name="CapturePreviewImage" Stretch="Uniform" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="2" Header="Controller output" Margin="5">
+            <StackPanel Margin="8">
+                <WrapPanel Margin="0,0,0,4">
+                    <Button Content="Configure Dolphin" Padding="10,5" Click="ConfigureDolphinClicked"
+                            ToolTip="Close Dolphin first. Backs up settings and configures Wii Remote 1 + Nunchuk using your keys, DSU analog controls and tracked motion, and mouse pointing."/>
+                    <Button Content="Choose Dolphin folder…" Padding="10,5" Margin="8,0,0,0" Click="ChooseDolphinFolderClicked"
+                            ToolTip="Use this for a portable installation or custom Dolphin user directory."/>
+                    <Button Content="Use Wii defaults" Padding="10,5" Margin="8,0,0,0" Click="ApplyWiiDefaultsClicked"
+                            ToolTip="Reset keyboard assignments to the current Wii defaults. Other settings are kept."/>
+                </WrapPanel>
+                <TextBlock x:Name="DolphinSetupStatusText" Text="Automatic setup: buttons, sticks, mouse pointing and tracked motion for both hands."
+                           TextWrapping="Wrap" Margin="0,0,0,6"/>
+                <WrapPanel Margin="0,0,0,6">
+                    <CheckBox x:Name="KeyboardOutputCheckBox" Content="Enable keyboard mappings" VerticalAlignment="Center" Margin="0,0,16,0"
+                              Checked="DesktopInputOptionsChanged" Unchecked="DesktopInputOptionsChanged" />
+                    <CheckBox x:Name="StickKeysCheckBox" Content="Stick directions as keys" VerticalAlignment="Center" Margin="0,0,16,0"
+                              Checked="DesktopInputOptionsChanged" Unchecked="DesktopInputOptionsChanged" />
+                    <CheckBox x:Name="MouseOutputCheckBox" Content="Enable mouse aiming" VerticalAlignment="Center" Margin="0,0,16,0"
+                              Checked="DesktopInputOptionsChanged" Unchecked="DesktopInputOptionsChanged" />
+                    <CheckBox x:Name="MouseClickCheckBox" Content="Right trigger clicks mouse" IsChecked="True" VerticalAlignment="Center"
+                              Checked="DesktopInputOptionsChanged" Unchecked="DesktopInputOptionsChanged" />
+                </WrapPanel>
+                <Expander Header="Left / right keyboard assignments" IsExpanded="False">
+                    <ScrollViewer MaxHeight="195" VerticalScrollBarVisibility="Auto">
+                        <UniformGrid Columns="2">
+                            <GroupBox Header="Left Touch" Margin="0,4,6,0">
+                                <ItemsControl x:Name="LeftMappingsList" Margin="6">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,2">
+                                                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="120"/></Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Label}" VerticalAlignment="Center"/>
+                                                <ComboBox Grid.Column="1" ItemsSource="{Binding Keys}" SelectedItem="{Binding SelectedKey, Mode=TwoWay}"
+                                                          AutomationProperties.Name="{Binding Label}"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </GroupBox>
+                            <GroupBox Header="Right Touch" Margin="6,4,0,0">
+                                <ItemsControl x:Name="RightMappingsList" Margin="6">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,2">
+                                                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="120"/></Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Label}" VerticalAlignment="Center"/>
+                                                <ComboBox Grid.Column="1" ItemsSource="{Binding Keys}" SelectedItem="{Binding SelectedKey, Mode=TwoWay}"
+                                                          AutomationProperties.Name="{Binding Label}"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </GroupBox>
+                        </UniformGrid>
+                    </ScrollViewer>
+                </Expander>
+                <DockPanel Margin="0,6,0,0">
+                    <TextBlock Text="Trigger / grip press threshold" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBlock DockPanel.Dock="Right" Width="50" Text="{Binding ElementName=TriggerThresholdSlider, Path=Value, StringFormat={}{0:P0}}" VerticalAlignment="Center"/>
+                    <Slider x:Name="TriggerThresholdSlider" Minimum="0.2" Maximum="0.95" Value="0.65" TickFrequency="0.05" IsSnapToTickEnabled="True"
+                            ValueChanged="InputThresholdChanged" AutomationProperties.Name="Trigger and grip press threshold"/>
+                </DockPanel>
+                <WrapPanel Margin="0,8,0,0">
+                    <CheckBox x:Name="DsuOutputCheckBox" Content="Enable analog sticks / triggers (DSU)" VerticalAlignment="Center" Margin="0,0,12,0"
+                              Checked="DsuOutputChanged" Unchecked="DsuOutputChanged"/>
+                    <TextBlock Text="Port" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <TextBox x:Name="DsuPortTextBox" Text="26760" Width="65" Margin="0,0,12,0" TextChanged="ConfigurationTextChanged"/>
+                    <TextBlock Text="Stick dead zone" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <Slider x:Name="StickDeadzoneSlider" Minimum="0" Maximum="0.5" Value="0.15" Width="110" TickFrequency="0.05" IsSnapToTickEnabled="True" ValueChanged="ConfigurationValueChanged"/>
+                    <TextBlock Text="{Binding ElementName=StickDeadzoneSlider, Path=Value, StringFormat={}{0:P0}}" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                </WrapPanel>
+                <CheckBox x:Name="MotionOutputCheckBox" Content="Enable tracked motion (DSU)" IsChecked="True" Margin="0,6,0,0"
+                          ToolTip="Turn off to test mouse pointing with stationary motion sensors. Buttons and sticks still work."
+                          Checked="MotionOutputChanged" Unchecked="MotionOutputChanged"/>
+                <Expander Header="Dolphin pointer calibration" Margin="0,6,0,0">
+                    <StackPanel Margin="4,6,4,0">
+                        <CheckBox x:Name="DirectPointerCheckBox" Content="Direct screen pointing (IR passthrough)" IsChecked="True" Margin="0,0,0,6"
+                                  ToolTip="Calculates two infrared dots directly from the Windows mouse position. The Wii game still interprets those dots. Apply while Dolphin is closed."
+                                  Checked="DirectPointerChanged" Unchecked="DirectPointerChanged"/>
+                        <TextBlock Text="Direct mode bypasses simulated pointer rotation. Range changes spread the IR coordinates; offset shifts them vertically. Uncheck for the previous pointing mode."
+                                   TextWrapping="Wrap" Margin="0,0,0,6"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="155"/><ColumnDefinition Width="*"/><ColumnDefinition Width="65"/></Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                            <TextBlock Text="Vertical reach" VerticalAlignment="Center"/>
+                            <Slider x:Name="PointerPitchSlider" Grid.Column="1" Minimum="5" Maximum="60" Value="20" TickFrequency="0.5" IsSnapToTickEnabled="True"
+                                    AutomationProperties.Name="Dolphin pointer vertical reach" ValueChanged="PointerValueChanged"/>
+                            <TextBlock Grid.Column="2" Text="{Binding ElementName=PointerPitchSlider, Path=Value, StringFormat={}{0:F1}}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Text="Horizontal reach" VerticalAlignment="Center"/>
+                            <Slider x:Name="PointerYawSlider" Grid.Row="1" Grid.Column="1" Minimum="5" Maximum="60" Value="25" TickFrequency="0.5" IsSnapToTickEnabled="True"
+                                    AutomationProperties.Name="Dolphin pointer horizontal reach" ValueChanged="PointerValueChanged"/>
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding ElementName=PointerYawSlider, Path=Value, StringFormat={}{0:F1}}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Row="2" Text="Vertical offset" VerticalAlignment="Center"/>
+                            <Slider x:Name="PointerOffsetSlider" Grid.Row="2" Grid.Column="1" Minimum="-50" Maximum="50" Value="0" TickFrequency="1" IsSnapToTickEnabled="True"
+                                    ToolTip="Try small steps of 2. Offset direction depends on the pointing mode and game."
+                                    AutomationProperties.Name="Dolphin pointer vertical offset in centimetres" ValueChanged="PointerValueChanged"/>
+                            <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding ElementName=PointerOffsetSlider, Path=Value, StringFormat={}{0:F0} cm}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        </Grid>
+                        <WrapPanel Margin="0,6,0,0">
+                            <Button Content="Apply pointer settings" Click="ApplyPointerSettingsClicked" Padding="10,4" Margin="0,0,8,0"
+                                    ToolTip="Close Dolphin first. Backs up and changes only pointer range, offset and calibration in Wii Remote 1 and our saved profile."/>
+                            <Button Content="Reset pointer defaults" Click="ResetPointerSettingsClicked" Padding="10,4"/>
+                        </WrapPanel>
+                        <TextBlock x:Name="PointerSettingsStatusText" Text="Close Dolphin before applying. These values are also used by Configure Dolphin."
+                                   TextWrapping="Wrap" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Expander>
+                <TextBlock x:Name="DsuStatusText" Text="DSU off. For true analog Nunchuk input, add this server in Dolphin's Alternate Input Sources." TextWrapping="Wrap" Margin="0,4,0,0"/>
+                <TextBlock x:Name="DesktopInputStatusText" Text="Output off. Choose keys, then enable the controls you want."
+                           TextWrapping="Wrap" Margin="0,8,0,0" />
+                <TextBlock x:Name="ConfigurationStatusText" Text="Configuration loads from controller-mapping.json beside the executable."
+                           TextTrimming="CharacterEllipsis" Margin="0,4,0,0"/>
+            </StackPanel>
+        </GroupBox>
+
         <!-- Controller Area -->
 
-        <Grid Grid.Row="0">
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid>
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -182,10 +365,11 @@
             </GroupBox>
 
         </Grid>
+        </ScrollViewer>
 
         <!-- Status Log -->
 
-        <GroupBox Grid.Row="1"
+        <GroupBox Grid.Row="4"
                   Header="Status Log"
                   Margin="5">
 
