@@ -1,7 +1,7 @@
 # Publishing Rift2Wii v0.1.0
 
 The release files are prepared locally. Run these commands in PowerShell from
-`C:\repos\OpenXR-Input-Explorer` after reviewing the README and release notes.
+`C:\repos\Rift2Wii` after reviewing the README and release notes.
 
 Sign in to GitHub again (complete the browser/device-code flow yourself):
 

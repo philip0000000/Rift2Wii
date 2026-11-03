@@ -7,14 +7,14 @@
     <NuGetAudit>false</NuGetAudit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="../../OpenXRInputExplorer/Services/ControllerMotionEstimator.cs" Link="ControllerMotionEstimator.cs" />
-    <Compile Include="../../OpenXRInputExplorer/Models/ControllerControl.cs" Link="ControllerControl.cs" />
-    <Compile Include="../../OpenXRInputExplorer/Models/ControllerState.cs" Link="ControllerState.cs" />
-    <Compile Include="../../OpenXRInputExplorer/Models/MappingConfiguration.cs" Link="MappingConfiguration.cs" />
-    <Compile Include="../../OpenXRInputExplorer/Services/MappingConfigurationStore.cs" Link="MappingConfigurationStore.cs" />
-    <Compile Include="../../OpenXRInputExplorer/Services/DolphinSetupService.cs" Link="DolphinSetupService.cs" />
-    <Compile Include="../../OpenXRInputExplorer/Services/DesktopInputService.cs" Link="DesktopInputService.cs" />
-    <Compile Include="../../OpenXRInputExplorer/Services/DsuProtocol.cs" Link="DsuProtocol.cs" />
-    <Compile Include="../../OpenXRInputExplorer/Services/DsuServer.cs" Link="DsuServer.cs" />
+    <Compile Include="../../Rift2Wii/Services/ControllerMotionEstimator.cs" Link="ControllerMotionEstimator.cs" />
+    <Compile Include="../../Rift2Wii/Models/ControllerControl.cs" Link="ControllerControl.cs" />
+    <Compile Include="../../Rift2Wii/Models/ControllerState.cs" Link="ControllerState.cs" />
+    <Compile Include="../../Rift2Wii/Models/MappingConfiguration.cs" Link="MappingConfiguration.cs" />
+    <Compile Include="../../Rift2Wii/Services/MappingConfigurationStore.cs" Link="MappingConfigurationStore.cs" />
+    <Compile Include="../../Rift2Wii/Services/DolphinSetupService.cs" Link="DolphinSetupService.cs" />
+    <Compile Include="../../Rift2Wii/Services/DesktopInputService.cs" Link="DesktopInputService.cs" />
+    <Compile Include="../../Rift2Wii/Services/DsuProtocol.cs" Link="DsuProtocol.cs" />
+    <Compile Include="../../Rift2Wii/Services/DsuServer.cs" Link="DsuServer.cs" />
   </ItemGroup>
 </Project>

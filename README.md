@@ -136,17 +136,17 @@ profiles and backup folders are retained.
 ## Build from source
 
 Install the .NET 8 SDK, or Visual Studio 2022 with the .NET desktop development workload.
-The solution and source namespaces retain their original internal names.
+The C# namespaces retain their original internal name, `OpenXRInputExplorer`.
 
 ```powershell
-dotnet build OpenXRInputExplorer.sln -c Release
-dotnet run --project OpenXRInputExplorer/OpenXRInputExplorer.csproj -c Release
+dotnet build Rift2Wii.sln -c Release
+dotnet run --project Rift2Wii/Rift2Wii.csproj -c Release
 ```
 
 Create the Windows x64 framework-dependent release folder:
 
 ```powershell
-dotnet publish OpenXRInputExplorer/OpenXRInputExplorer.csproj -c Release -r win-x64 --self-contained false -o publish/Rift2Wii
+dotnet publish Rift2Wii/Rift2Wii.csproj -c Release -r win-x64 --self-contained false -o publish/Rift2Wii
 ```
 
 The native `openxr_loader.dll` is copied from the pinned OpenXR.Loader package. Keep it
