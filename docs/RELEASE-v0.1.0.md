@@ -15,7 +15,8 @@ Dolphin Emulator installed separately. Extract the ZIP and run Rift2Wii.exe.
 Existing users: keep controller-mapping.json beside the new executable. Close Dolphin
 and run Configure Dolphin once to install the Rift2Wii profile and migrate the server name.
 
-Buttons, sticks, motion and pointing were tested on Rift S. Other headsets are unverified.
+Buttons, sticks, motion and pointing were tested on Windows 11 with Rift S. Windows 10
+and other headsets are unverified.
 Motion is estimated from tracking rather than raw IMU data. Pointer behavior ultimately
 depends on the emulated software. Read README.md for setup and controls.
 

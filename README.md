@@ -27,7 +27,9 @@ input in the same OpenXR session.
 - [.NET 8 Desktop Runtime for Windows x64](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
   for the downloadable build. Choose **Desktop Runtime**, not just the standard runtime.
 
-Rift S is the tested headset. Other headsets and controller layouts are unverified.
+Tested on **Windows 11 with Oculus Rift S**. Windows 10 version 2004 is the minimum
+Windows API requirement; the complete setup has not been verified on Windows 10.
+Other headsets and controller layouts are unverified.
 Buttons, analog input, motion and pointing have been tested on Rift S; this does not
 promise compatibility with every application or input requirement.
 
