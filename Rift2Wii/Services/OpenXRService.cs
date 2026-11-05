@@ -1,4 +1,4 @@
-﻿using OpenXRInputExplorer.Models;
+using OpenXRInputExplorer.Models;
 using Silk.NET.Core;
 using Silk.NET.OpenXR;
 using System.Text;
@@ -54,8 +54,6 @@ namespace OpenXRInputExplorer.Services
         private bool _isSessionRunning;
         public bool ControllerActionsAvailable { get; private set; }
 
-        private Silk.NET.OpenXR.Action _triggerClickAction;
-        private Silk.NET.OpenXR.Action _gripClickAction;
         private Silk.NET.OpenXR.Action _gripValueAction;
         private Silk.NET.OpenXR.Action _triggerValueAction;
 
@@ -110,7 +108,7 @@ namespace OpenXRInputExplorer.Services
         {
             var systemInfo = new SystemGetInfo
             {
-                Type = StructureType.TypeSystemGetInfo,
+                Type = StructureType.SystemGetInfo,
                 FormFactor = FormFactor.HeadMountedDisplay
             };
 
@@ -154,7 +152,7 @@ namespace OpenXRInputExplorer.Services
 
                 var createInfo = new InstanceCreateInfo
                 {
-                    Type = StructureType.TypeInstanceCreateInfo,
+                    Type = StructureType.InstanceCreateInfo,
                     ApplicationInfo = applicationInfo,
                     EnabledExtensionCount = 1,
                     EnabledExtensionNames = enabledExtensions
@@ -193,12 +191,12 @@ namespace OpenXRInputExplorer.Services
 
             var frameWaitInfo = new FrameWaitInfo
             {
-                Type = StructureType.TypeFrameWaitInfo
+                Type = StructureType.FrameWaitInfo
             };
 
             var frameState = new FrameState
             {
-                Type = StructureType.TypeFrameState
+                Type = StructureType.FrameState
             };
 
             Result result = _xr.WaitFrame(
@@ -213,7 +211,7 @@ namespace OpenXRInputExplorer.Services
 
             var frameBeginInfo = new FrameBeginInfo
             {
-                Type = StructureType.TypeFrameBeginInfo
+                Type = StructureType.FrameBeginInfo
             };
 
             result = _xr.BeginFrame(
@@ -225,7 +223,7 @@ namespace OpenXRInputExplorer.Services
 
             var frameEndInfo = new FrameEndInfo
             {
-                Type = StructureType.TypeFrameEndInfo,
+                Type = StructureType.FrameEndInfo,
                 DisplayTime = frameState.PredictedDisplayTime,
                 EnvironmentBlendMode = EnvironmentBlendMode.Opaque,
                 LayerCount = 0,
@@ -282,7 +280,7 @@ namespace OpenXRInputExplorer.Services
         {
             var properties = new SystemProperties
             {
-                Type = StructureType.TypeSystemProperties
+                Type = StructureType.SystemProperties
             };
 
             Result result = _xr.GetSystemProperties(_instance, _systemId, &properties);
@@ -324,13 +322,13 @@ namespace OpenXRInputExplorer.Services
 
             var d3d11Binding = new GraphicsBindingD3D11KHR
             {
-                Type = StructureType.TypeGraphicsBindingD3D11Khr,
+                Type = StructureType.GraphicsBindingD3D11Khr,
                 Device = (void*)nativeDevice
             };
 
             var sessionCreateInfo = new SessionCreateInfo
             {
-                Type = StructureType.TypeSessionCreateInfo,
+                Type = StructureType.SessionCreateInfo,
                 Next = &d3d11Binding,
                 SystemId = _systemId
             };
@@ -411,7 +409,7 @@ namespace OpenXRInputExplorer.Services
             for (int i = 0; i < extensions.Length; i++)
             {
                 extensions[i].Type =
-                    StructureType.TypeExtensionProperties;
+                    StructureType.ExtensionProperties;
             }
 
             fixed (ExtensionProperties* extensionsPtr = extensions)
@@ -469,7 +467,7 @@ namespace OpenXRInputExplorer.Services
         {
             var requirements = new GraphicsRequirementsD3D11KHR
             {
-                Type = StructureType.TypeGraphicsRequirementsD3D11Khr
+                Type = StructureType.GraphicsRequirementsD3D11Khr
             };
 
             Result result = _getD3D11GraphicsRequirements(
@@ -505,7 +503,7 @@ namespace OpenXRInputExplorer.Services
 
             var createInfo = new ReferenceSpaceCreateInfo
             {
-                Type = StructureType.TypeReferenceSpaceCreateInfo,
+                Type = StructureType.ReferenceSpaceCreateInfo,
                 ReferenceSpaceType = ReferenceSpaceType.Local,
                 PoseInReferenceSpace = pose
             };
@@ -529,7 +527,7 @@ namespace OpenXRInputExplorer.Services
         {
             var createInfo = new ActionSetCreateInfo
             {
-                Type = StructureType.TypeActionSetCreateInfo,
+                Type = StructureType.ActionSetCreateInfo,
                 Priority = 0
             };
 
@@ -585,7 +583,7 @@ namespace OpenXRInputExplorer.Services
 
             var createInfo = new ActionCreateInfo
             {
-                Type = StructureType.TypeActionCreateInfo,
+                Type = StructureType.ActionCreateInfo,
                 ActionType = ActionType.PoseInput,
                 CountSubactionPaths = 2,
                 SubactionPaths = subactionPaths
@@ -762,7 +760,7 @@ namespace OpenXRInputExplorer.Services
 
             var suggestedBindings = new InteractionProfileSuggestedBinding
             {
-                Type = StructureType.TypeInteractionProfileSuggestedBinding,
+                Type = StructureType.InteractionProfileSuggestedBinding,
                 InteractionProfile = interactionProfilePath,
                 CountSuggestedBindings = 15,
                 SuggestedBindings = bindings
@@ -786,7 +784,7 @@ namespace OpenXRInputExplorer.Services
 
             var attachInfo = new SessionActionSetsAttachInfo
             {
-                Type = StructureType.TypeSessionActionSetsAttachInfo,
+                Type = StructureType.SessionActionSetsAttachInfo,
                 CountActionSets = 1,
                 ActionSets = actionSets
             };
@@ -829,7 +827,7 @@ namespace OpenXRInputExplorer.Services
 
             var createInfo = new ActionSpaceCreateInfo
             {
-                Type = StructureType.TypeActionSpaceCreateInfo,
+                Type = StructureType.ActionSpaceCreateInfo,
                 Action = _gripPoseAction,
                 SubactionPath = subactionPath,
                 PoseInActionSpace = pose
@@ -864,7 +862,7 @@ namespace OpenXRInputExplorer.Services
 
             var syncInfo = new ActionsSyncInfo
             {
-                Type = StructureType.TypeActionsSyncInfo,
+                Type = StructureType.ActionsSyncInfo,
                 CountActiveActionSets = 1,
                 ActiveActionSets = &activeActionSet
             };
@@ -955,11 +953,11 @@ namespace OpenXRInputExplorer.Services
         {
             state.IsTracked = false;
             state.LinearVelocityValid = state.AngularVelocityValid = false;
-            var velocity = new SpaceVelocity { Type = StructureType.TypeSpaceVelocity };
+            var velocity = new SpaceVelocity { Type = StructureType.SpaceVelocity };
             var location = new SpaceLocation
             {
                 Next = &velocity,
-                Type = StructureType.TypeSpaceLocation
+                Type = StructureType.SpaceLocation
             };
 
             Result result = _xr.LocateSpace(
@@ -1023,12 +1021,12 @@ namespace OpenXRInputExplorer.Services
         {
             var eventData = new EventDataBuffer
             {
-                Type = StructureType.TypeEventDataBuffer
+                Type = StructureType.EventDataBuffer
             };
 
             while (_xr.PollEvent(_instance, &eventData) == Result.Success)
             {
-                if (eventData.Type == StructureType.TypeEventDataSessionStateChanged)
+                if (eventData.Type == StructureType.EventDataSessionStateChanged)
                 {
                     EventDataSessionStateChanged* stateChanged =
                         (EventDataSessionStateChanged*)&eventData;
@@ -1052,7 +1050,7 @@ namespace OpenXRInputExplorer.Services
 
                 eventData = new EventDataBuffer
                 {
-                    Type = StructureType.TypeEventDataBuffer
+                    Type = StructureType.EventDataBuffer
                 };
             }
         }
@@ -1066,7 +1064,7 @@ namespace OpenXRInputExplorer.Services
 
             var beginInfo = new SessionBeginInfo
             {
-                Type = StructureType.TypeSessionBeginInfo,
+                Type = StructureType.SessionBeginInfo,
                 PrimaryViewConfigurationType =
                     ViewConfigurationType.PrimaryStereo
             };
@@ -1092,7 +1090,7 @@ namespace OpenXRInputExplorer.Services
 
             var createInfo = new ActionCreateInfo
             {
-                Type = StructureType.TypeActionCreateInfo,
+                Type = StructureType.ActionCreateInfo,
                 ActionType = ActionType.FloatInput,
                 CountSubactionPaths = 2,
                 SubactionPaths = subactionPaths
@@ -1124,7 +1122,7 @@ namespace OpenXRInputExplorer.Services
 
             var createInfo = new ActionCreateInfo
             {
-                Type = StructureType.TypeActionCreateInfo,
+                Type = StructureType.ActionCreateInfo,
                 ActionType = ActionType.FloatInput,
                 CountSubactionPaths = 2,
                 SubactionPaths = subactionPaths
@@ -1156,7 +1154,7 @@ namespace OpenXRInputExplorer.Services
 
             var createInfo = new ActionCreateInfo
             {
-                Type = StructureType.TypeActionCreateInfo,
+                Type = StructureType.ActionCreateInfo,
                 ActionType = ActionType.Vector2fInput,
                 CountSubactionPaths = 2,
                 SubactionPaths = subactionPaths
@@ -1197,7 +1195,7 @@ namespace OpenXRInputExplorer.Services
 
             var createInfo = new ActionCreateInfo
             {
-                Type = StructureType.TypeActionCreateInfo,
+                Type = StructureType.ActionCreateInfo,
                 ActionType = ActionType.BooleanInput,
                 CountSubactionPaths = 2,
                 SubactionPaths = subactionPaths
@@ -1225,14 +1223,14 @@ namespace OpenXRInputExplorer.Services
         {
             var getInfo = new ActionStateGetInfo
             {
-                Type = StructureType.TypeActionStateGetInfo,
+                Type = StructureType.ActionStateGetInfo,
                 Action = action,
                 SubactionPath = subactionPath
             };
 
             var state = new ActionStateBoolean
             {
-                Type = StructureType.TypeActionStateBoolean
+                Type = StructureType.ActionStateBoolean
             };
 
             Result result = _xr.GetActionStateBoolean(
@@ -1252,14 +1250,14 @@ namespace OpenXRInputExplorer.Services
         {
             var getInfo = new ActionStateGetInfo
             {
-                Type = StructureType.TypeActionStateGetInfo,
+                Type = StructureType.ActionStateGetInfo,
                 Action = action,
                 SubactionPath = subactionPath
             };
 
             var state = new ActionStateFloat
             {
-                Type = StructureType.TypeActionStateFloat
+                Type = StructureType.ActionStateFloat
             };
 
             Result result = _xr.GetActionStateFloat(
@@ -1279,14 +1277,14 @@ namespace OpenXRInputExplorer.Services
         {
             var getInfo = new ActionStateGetInfo
             {
-                Type = StructureType.TypeActionStateGetInfo,
+                Type = StructureType.ActionStateGetInfo,
                 Action = action,
                 SubactionPath = subactionPath
             };
 
             var state = new ActionStateVector2f
             {
-                Type = StructureType.TypeActionStateVector2f
+                Type = StructureType.ActionStateVector2f
             };
 
             Result result = _xr.GetActionStateVector2(

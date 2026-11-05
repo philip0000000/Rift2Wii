@@ -31,7 +31,7 @@ to WiimoteNew.ini for the next Dolphin launch. Do not run Dolphin during install
 | Left trigger | Nunchuk Z |
 | Left stick | Nunchuk stick |
 | Right stick | Wii D-pad |
-| Right aim | Existing mouse-controlled Wii pointer |
+| Right aim | Mouse position / direct infrared pointing |
 
 Assigned keyboard keys are used for the corresponding buttons/triggers; **None** uses
 a DSU fallback in the generated profile. Trigger and grip keyboard assignments are both
@@ -92,7 +92,7 @@ right grip to Wii B. Mouse-clicking can be disabled separately if you want only 
 ## Motion: keyboard simulation versus DSU
 
 Dolphin distinguishes **Motion Simulation** (generate movement from ordinary controls)
-from **Motion Input** (accelerometer and gyro samples). The screenshots illustrate that
+from **Motion Input** (accelerometer and gyro samples). These tabs represent that
 distinction: a key can activate a canned shake, tilt or swing, but that does not transmit
 the physical controller's continuous movement. Buttons are useful for a fallback shake
 command, and analog axes can drive simulated movement, but tracked motion needs more data.
